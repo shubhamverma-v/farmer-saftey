@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Farmer Support  | किसान सहायक </title>
+    <title>Farmer Safety | किसान सुरक्षा</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -72,10 +72,9 @@
 </head>
 <body class="text-gray-800">
 
-    <!-- Header Section -->
     <header class="header-gradient text-white p-4 shadow-md sticky top-0 z-50">
         <div class="container mx-auto flex justify-between items-center">
-            <h1 class="text-2xl font-bold" data-lang-key="app_title">किसान सहायक </h1>
+            <h1 class="text-2xl font-bold" data-lang-key="app_title">किसान सुरक्षा</h1>
             <div class="flex items-center">
                 <select id="language-selector" class="bg-green-700 text-white rounded p-1 text-sm mr-4 focus:outline-none">
                     <option value="hi">हिंदी</option>
@@ -94,7 +93,6 @@
                 </button>
             </div>
         </div>
-        <!-- Mobile Menu -->
         <div id="mobile-menu" class="hidden md:hidden mt-4">
             <a href="#mandi" class="block py-2 px-4 text-sm hover:bg-green-600" data-lang-key="nav_mandi_mobile">मंडी भाव</a>
             <a href="#weather" class="block py-2 px-4 text-sm hover:bg-green-600" data-lang-key="nav_weather_mobile">मौसम</a>
@@ -103,10 +101,8 @@
         </div>
     </header>
 
-    <!-- Main Content -->
     <main class="container mx-auto p-4 md:p-8">
 
-        <!-- Mandi Prices Section -->
         <section id="mandi" class="mb-12">
             <h2 class="text-3xl font-bold text-center mb-2 text-green-800" data-lang-key="mandi_title">वास्तविक समय मंडी भाव</h2>
             <p class="text-center text-gray-600 mb-6" data-lang-key="mandi_subtitle">अपने नजदीकी मंडी में फसलों के नवीनतम भाव जानें</p>
@@ -116,7 +112,6 @@
                     <div class="flex-grow">
                         <label for="state-select" class="block text-sm font-medium text-gray-700" data-lang-key="mandi_select_state">राज्य चुनें</label>
                         <select id="state-select" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
-                            <!-- JS will populate states -->
                         </select>
                     </div>
                     <div class="flex-grow">
@@ -135,20 +130,17 @@
                             </tr>
                         </thead>
                         <tbody id="mandi-table-body">
-                            <!-- JS will populate this -->
                         </tbody>
                     </table>
                 </div>
             </div>
         </section>
 
-        <!-- Weather Section -->
         <section id="weather" class="mb-12">
             <h2 class="text-3xl font-bold text-center mb-2 text-green-800" data-lang-key="weather_title">मौसम की जानकारी</h2>
             <p id="weather-location-subtitle" class="text-center text-gray-600 mb-6" data-lang-key="weather_subtitle">देहरादून, उत्तराखंड के लिए वर्तमान और साप्ताहिक मौसम पूर्वानुमान</p>
             
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <!-- Current Weather -->
                 <div class="md:col-span-1 bg-white p-6 rounded-lg card-shadow flex flex-col items-center justify-center text-center">
                     <h3 class="font-semibold text-lg" data-lang-key="weather_current">अभी का मौसम</h3>
                     <p class="text-sm text-gray-500" id="current-date">सितम्बर 19, 2025</p>
@@ -160,24 +152,20 @@
                         <div><i class="fas fa-wind text-gray-500 mr-1"></i><span id="current-wind">5 km/h</span></div>
                     </div>
                 </div>
-                <!-- 7-day forecast -->
                 <div class="md:col-span-2 bg-white p-6 rounded-lg card-shadow">
                     <h3 class="font-semibold text-lg mb-4" data-lang-key="weather_forecast_title">अगले 7 दिनों का पूर्वानुमान</h3>
                     <div id="forecast-container" class="space-y-3">
-                        <!-- JS will populate this -->
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Government Schemes Section -->
         <section id="schemes" class="mb-12">
             <h2 class="text-3xl font-bold text-center mb-2 text-green-800" data-lang-key="schemes_title">सरकारी योजनाएं</h2>
             <p class="text-center text-gray-600 mb-6" data-lang-key="schemes_subtitle">किसानों के लिए महत्वपूर्ण सरकारी योजनाओं की जानकारी</p>
             
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                 <!-- Scheme Card 1 -->
-                <div class="bg-white rounded-lg card-shadow overflow-hidden">
+                 <div class="bg-white rounded-lg card-shadow overflow-hidden">
                     <div class="p-6">
                         <h3 class="font-bold text-xl mb-2" data-lang-key="scheme1_title">पीएम-किसान सम्मान निधि</h3>
                         <p class="text-gray-700 text-base" data-lang-key="scheme1_desc">
@@ -185,10 +173,9 @@
                         </p>
                     </div>
                     <div class="px-6 pt-4 pb-2">
-                        <a href="#" class="inline-block bg-green-100 rounded-full px-3 py-1 text-sm font-semibold text-green-700 mr-2 mb-2 hover:bg-green-200" data-lang-key="learn_more">और जानें</a>
+                        <a href="https://pmkisan.gov.in/" target="_blank" rel="noopener noreferrer" class="inline-block bg-green-100 rounded-full px-3 py-1 text-sm font-semibold text-green-700 mr-2 mb-2 hover:bg-green-200" data-lang-key="learn_more">और जानें</a>
                     </div>
                 </div>
-                <!-- Scheme Card 2 -->
                 <div class="bg-white rounded-lg card-shadow overflow-hidden">
                     <div class="p-6">
                         <h3 class="font-bold text-xl mb-2" data-lang-key="scheme2_title">प्रधानमंत्री फसल बीमा योजना</h3>
@@ -197,10 +184,9 @@
                         </p>
                     </div>
                     <div class="px-6 pt-4 pb-2">
-                        <a href="#" class="inline-block bg-green-100 rounded-full px-3 py-1 text-sm font-semibold text-green-700 mr-2 mb-2 hover:bg-green-200" data-lang-key="learn_more_2">और जानें</a>
+                        <a href="https://pmfby.gov.in/" target="_blank" rel="noopener noreferrer" class="inline-block bg-green-100 rounded-full px-3 py-1 text-sm font-semibold text-green-700 mr-2 mb-2 hover:bg-green-200" data-lang-key="learn_more_2">और जानें</a>
                     </div>
                 </div>
-                <!-- Scheme Card 3 -->
                 <div class="bg-white rounded-lg card-shadow overflow-hidden">
                     <div class="p-6">
                         <h3 class="font-bold text-xl mb-2" data-lang-key="scheme3_title">किसान क्रेडिट कार्ड (KCC)</h3>
@@ -209,20 +195,18 @@
                         </p>
                     </div>
                     <div class="px-6 pt-4 pb-2">
-                         <a href="#" class="inline-block bg-green-100 rounded-full px-3 py-1 text-sm font-semibold text-green-700 mr-2 mb-2 hover:bg-green-200" data-lang-key="learn_more_3">और जानें</a>
+                         <a href="https://agricoop.gov.in/en/Schemes/KCC" target="_blank" rel="noopener noreferrer" class="inline-block bg-green-100 rounded-full px-3 py-1 text-sm font-semibold text-green-700 mr-2 mb-2 hover:bg-green-200" data-lang-key="learn_more_3">और जानें</a>
                     </div>
                 </div>
             </div>
         </section>
         
-        <!-- Chatbot Section -->
         <section id="chatbot">
             <h2 class="text-3xl font-bold text-center mb-2 text-green-800" data-lang-key="chatbot_title">कृषि चैटबॉट</h2>
             <p class="text-center text-gray-600 mb-6" data-lang-key="chatbot_subtitle">मुझसे मौसम, मंडी भाव और योजनाओं के बारे में पूछें!</p>
 
             <div class="bg-white p-6 rounded-lg card-shadow max-w-3xl mx-auto">
                 <div id="chatbot-window" class="chatbot-window mb-4">
-                    <!-- Chat messages will appear here -->
                 </div>
                 <form id="chatbot-form" class="flex gap-2">
                     <input type="text" id="chatbot-input" class="flex-grow p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500" data-lang-placeholder-key="chatbot_placeholder" placeholder="अपना सवाल यहाँ लिखें...">
@@ -235,16 +219,15 @@
 
     </main>
 
-    <!-- Footer -->
     <footer class="bg-green-800 text-white mt-12 p-6 text-center">
-        <p data-lang-key="footer_text">&copy; 2025 किसान सहायक. सर्वाधिकार सुरक्षित।</p>
+        <p data-lang-key="footer_text">&copy; 2025 किसान सुरक्षा ऐप. सर्वाधिकार सुरक्षित।</p>
     </footer>
 
     <script>
         // --- DATA ---
         const translations = {
             hi: {
-                app_title: "किसान सहायक", nav_mandi: "मंडी भाव", nav_weather: "मौसम", nav_schemes: "सरकारी योजनाएं", nav_chatbot: "चैटबॉट",
+                app_title: "किसान सुरक्षा ऐप", nav_mandi: "मंडी भाव", nav_weather: "मौसम", nav_schemes: "सरकारी योजनाएं", nav_chatbot: "चैटबॉट",
                 nav_mandi_mobile: "मंडी भाव", nav_weather_mobile: "मौसम", nav_schemes_mobile: "सरकारी योजनाएं", nav_chatbot_mobile: "चैटबॉट",
                 mandi_title: "वास्तविक समय मंडी भाव", mandi_subtitle: "अपने राज्य में फसलों के नवीनतम भाव जानें",
                 mandi_select_state: "राज्य चुनें", mandi_search_crop: "फसल खोजें", crop_search_placeholder: "जैसे, गेहूं",
@@ -266,11 +249,11 @@
                 chatbot_weather_response: "{state} में आज का मौसम {condition} है, तापमान {temp}°C है।",
                 chatbot_price_response: "{state} में {crop} का औसत भाव ₹{price} प्रति क्विंटल है।",
                 chatbot_price_not_found: "{state} में {crop} का भाव उपलब्ध नहीं है।",
-                footer_text: "© 2025 किसान सहायक ऐप. सर्वाधिकार सुरक्षित।",
+                footer_text: "© 2025 किसान सुरक्षा ऐप. सर्वाधिकार सुरक्षित।",
                 no_results: "कोई परिणाम नहीं मिला"
             },
             en: {
-                app_title: "Farmer Support", nav_mandi: "Mandi Prices", nav_weather: "Weather", nav_schemes: "Govt Schemes", nav_chatbot: "Chatbot",
+                app_title: "Farmer Safety App", nav_mandi: "Mandi Prices", nav_weather: "Weather", nav_schemes: "Govt Schemes", nav_chatbot: "Chatbot",
                 nav_mandi_mobile: "Mandi Prices", nav_weather_mobile: "Weather", nav_schemes_mobile: "Govt Schemes", nav_chatbot_mobile: "Chatbot",
                 mandi_title: "Real-time Mandi Prices", mandi_subtitle: "Get the latest crop prices in your state",
                 mandi_select_state: "Select State", mandi_search_crop: "Search Crop", crop_search_placeholder: "e.g., Wheat",
@@ -292,11 +275,11 @@
                 chatbot_weather_response: "The weather in {state} today is {condition} with a temperature of {temp}°C.",
                 chatbot_price_response: "The average price of {crop} in {state} is ₹{price} per quintal.",
                 chatbot_price_not_found: "Price for {crop} is not available in {state}.",
-                footer_text: "© 2025 Farmer Support App. All rights reserved.",
+                footer_text: "© 2025 Farmer Safety App. All rights reserved.",
                 no_results: "No results found"
             },
             pa: {
-                app_title: "ਕਿਸਾਨ ਸਹਾਇਕ", nav_mandi: "ਮੰਡੀ ਕੀਮਤਾਂ", nav_weather: "ਮੌਸਮ", nav_schemes: "ਸਰਕਾਰੀ ਯੋਜਨਾਵਾਂ", nav_chatbot: "ਚੈਟਬੋਟ",
+                app_title: "ਕਿਸਾਨ ਸੁਰੱਖਿਆ ਐਪ", nav_mandi: "ਮੰਡੀ ਕੀਮਤਾਂ", nav_weather: "ਮੌਸਮ", nav_schemes: "ਸਰਕਾਰੀ ਯੋਜਨਾਵਾਂ", nav_chatbot: "ਚੈਟਬੋਟ",
                 nav_mandi_mobile: "ਮੰਡੀ ਕੀਮਤਾਂ", nav_weather_mobile: "ਮੌਸਮ", nav_schemes_mobile: "ਸਰਕਾਰੀ ਯੋਜਨਾਵਾਂ", nav_chatbot_mobile: "ਚੈਟਬੋਟ",
                 mandi_title: "ਰੀਅਲ-ਟਾਈਮ ਮੰਡੀ ਕੀਮਤਾਂ", mandi_subtitle: "ਆਪਣੇ ਰਾਜ ਵਿੱਚ ਫਸਲਾਂ ਦੀਆਂ ਨਵੀਨਤਮ ਕੀਮਤਾਂ ਜਾਣੋ",
                 mandi_select_state: "ਰਾਜ ਚੁਣੋ", mandi_search_crop: "ਫਸਲ ਲੱਭੋ", crop_search_placeholder: "ਜਿਵੇਂ, ਕਣਕ",
@@ -318,12 +301,12 @@
                 chatbot_weather_response: "{state} ਵਿੱਚ ਅੱਜ ਮੌਸਮ {condition} ਹੈ, ਤਾਪਮਾਨ {temp}°C ਹੈ।",
                 chatbot_price_response: "{state} ਵਿੱਚ {crop} ਦੀ ਔਸਤ ਕੀਮਤ ₹{price} ਪ੍ਰਤੀ ਕੁਇੰਟਲ ਹੈ।",
                 chatbot_price_not_found: "{state} ਵਿੱਚ {crop} ਦੀ ਕੀਮਤ ਉਪਲਬਧ ਨਹੀਂ ਹੈ।",
-                footer_text: "© 2025 ਕਿਸਾਨ ਸਹਾਇਕ ਐਪ। ਸਾਰੇ ਹੱਕ ਰਾਖਵੇਂ ਹਨ।",
+                footer_text: "© 2025 ਕਿਸਾਨ ਸੁਰੱਖਿਆ ਐਪ। ਸਾਰੇ ਹੱਕ ਰਾਖਵੇਂ ਹਨ।",
                 no_results: "ਕੋਈ ਨਤੀਜਾ ਨਹੀਂ ਮਿਲਿਆ"
             },
             mr: {
-                app_title: "शेतकरी समर्थन", nav_mandi: "बाजार भाव", nav_weather: "हवामान", nav_schemes: "सरकारी योजना", nav_chatbot: "चॅटबॉट",
-                nav_mandi_mobile: "बाजार भाव", nav_weather_mobile: "हवामान", nav_schemes_mobile: "सरकारी योजना", nav_chatbot_mobile: "चॅटबॉट",
+                app_title: "शेतकरी सुरक्षा ॲप", nav_mandi: "बाजार भाव", nav_weather: "हवामान", nav_schemes: "सरकारी योजना", nav_chatbot: "चॅटबॉट",
+                nav_mandi_mobile: "बाजार भाव", nav_weather_mobile: "हवामान", nav_schemes_mobile: "सरकारी योजना", nav_chatbot_mobile: "चॅਟबॉट",
                 mandi_title: "वास्तविक वेळेतील बाजार भाव", mandi_subtitle: "तुमच्या राज्यातील पिकांचे नवीनतम भाव जाणून घ्या",
                 mandi_select_state: "राज्य निवडा", mandi_search_crop: "पीक शोधा", crop_search_placeholder: "उदा. गहू",
                 mandi_col_crop: "पिकाचे नाव", mandi_col_modal: "सर्वसाधारण किंमत (प्रति क्विंटल)", mandi_col_change: "बदल",
@@ -344,7 +327,7 @@
                 chatbot_weather_response: "{state} मध्ये आज हवामान {condition} आहे, तापमान {temp}°C आहे.",
                 chatbot_price_response: "{state} मध्ये {crop} चा सरासरी भाव ₹{price} प्रति क्विंटल आहे.",
                 chatbot_price_not_found: "{state} मध्ये {crop} चा भाव उपलब्ध नाही.",
-                footer_text: "© 2025 शेतकरी समर्थन ॲप. सर्व हक्क राखीव.",
+                footer_text: "© 2025 शेतकरी सुरक्षा ॲप. सर्व हक्क राखीव.",
                 no_results: "कोणतेही परिणाम आढळले नाहीत"
             }
         };
@@ -603,4 +586,3 @@
     </script>
 </body>
 </html>
-
