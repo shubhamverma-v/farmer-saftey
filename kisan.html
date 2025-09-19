@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farmer Support App | किसान सहायक ऐप</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7fef8;
+        }
+        .header-gradient {
+            background: linear-gradient(to right, #228B22, #3CB371);
+        }
+        .card-shadow {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+        }
+        .chatbot-window {
+            height: 400px;
+            background-color: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            scroll-behavior: smooth;
+        }
+        .chat-bubble {
+            padding: 0.75rem 1rem;
+            border-radius: 1rem;
+            max-width: 80%;
+            line-height: 1.5;
+        }
+        .chat-bubble.user {
+            background-color: #3b82f6;
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 0.25rem;
+        }
+        .chat-bubble.bot {
+            background-color: #e5e7eb;
+            color: #1f2937;
+            align-self: flex-start;
+            border-bottom-left-radius: 0.25rem;
+        }
+        .chat-bubble.bot .bot-icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 8px;
+        }
+         /* Custom scrollbar for chat */
+        .chatbot-window::-webkit-scrollbar {
+            width: 8px;
+        }
+        .chatbot-window::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        .chatbot-window::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+        .chatbot-window::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <!-- Header Section -->
+    <header class="header-gradient text-white p-4 shadow-md sticky top-0 z-50">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold" data-lang-key="app_title">किसान सहायक ऐप</h1>
+            <div class="flex items-center">
+                <select id="language-selector" class="bg-green-700 text-white rounded p-1 text-sm mr-4 focus:outline-none">
+                    <option value="hi">हिंदी</option>
+                    <option value="en">English</option>
+                    <option value="pa">ਪੰਜਾਬੀ</option>
+                    <option value="mr">मराठी</option>
+                </select>
+                <nav class="hidden md:flex space-x-6">
+                    <a href="#mandi" class="hover:text-green-200" data-lang-key="nav_mandi">मंडी भाव</a>
+                    <a href="#weather" class="hover:text-green-200" data-lang-key="nav_weather">मौसम</a>
+                    <a href="#schemes" class="hover:text-green-200" data-lang-key="nav_schemes">सरकारी योजनाएं</a>
+                    <a href="#chatbot" class="hover:text-green-200" data-lang-key="nav_chatbot">चैटबॉट</a>
+                </nav>
+                <button id="mobile-menu-button" class="md:hidden">
+                    <i class="fas fa-bars text-2xl"></i>
+                </button>
+            </div>
+        </div>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden mt-4">
+            <a href="#mandi" class="block py-2 px-4 text-sm hover:bg-green-600" data-lang-key="nav_mandi_mobile">मंडी भाव</a>
+            <a href="#weather" class="block py-2 px-4 text-sm hover:bg-green-600" data-lang-key="nav_weather_mobile">मौसम</a>
+            <a href="#schemes" class="block py-2 px-4 text-sm hover:bg-green-600" data-lang-key="nav_schemes_mobile">सरकारी योजनाएं</a>
+            <a href="#chatbot" class="block py-2 px-4 text-sm hover:bg-green-600" data-lang-key="nav_chatbot_mobile">चैटबॉट</a>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto p-4 md:p-8">
+
+        <!-- Mandi Prices Section -->
+        <section id="mandi" class="mb-12">
+            <h2 class="text-3xl font-bold text-center mb-2 text-green-800" data-lang-key="mandi_title">वास्तविक समय मंडी भाव</h2>
+            <p class="text-center text-gray-600 mb-6" data-lang-key="mandi_subtitle">अपने नजदीकी मंडी में फसलों के नवीनतम भाव जानें</p>
+            
+            <div class="bg-white p-6 rounded-lg card-shadow">
+                <div class="flex flex-col md:flex-row gap-4 mb-4">
+                    <div class="flex-grow">
+                        <label for="state-select" class="block text-sm font-medium text-gray-700" data-lang-key="mandi_select_state">राज्य चुनें</label>
+                        <select id="state-select" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
+                            <!-- JS will populate states -->
+                        </select>
+                    </div>
+                    <div class="flex-grow">
+                        <label for="crop-search" class="block text-sm font-medium text-gray-700" data-lang-key="mandi_search_crop">फसल खोजें</label>
+                        <input type="text" id="crop-search" data-lang-placeholder-key="crop_search_placeholder" placeholder="जैसे, गेहूं" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="min-w-full bg-white border">
+                        <thead class="bg-green-100">
+                            <tr>
+                                <th class="py-3 px-4 text-left text-sm font-semibold text-green-800" data-lang-key="mandi_col_crop">फसल का नाम</th>
+                                <th class="py-3 px-4 text-left text-sm font-semibold text-green-800" data-lang-key="mandi_col_modal">औसत मूल्य (प्रति क्विंटल)</th>
+                                <th class="py-3 px-4 text-left text-sm font-semibold text-green-800" data-lang-key="mandi_col_change">बदलाव</th>
+                            </tr>
+                        </thead>
+                        <tbody id="mandi-table-body">
+                            <!-- JS will populate this -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Weather Section -->
+        <section id="weather" class="mb-12">
+            <h2 class="text-3xl font-bold text-center mb-2 text-green-800" data-lang-key="weather_title">मौसम की जानकारी</h2>
+            <p id="weather-location-subtitle" class="text-center text-gray-600 mb-6" data-lang-key="weather_subtitle">देहरादून, उत्तराखंड के लिए वर्तमान और साप्ताहिक मौसम पूर्वानुमान</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Current Weather -->
+                <div class="md:col-span-1 bg-white p-6 rounded-lg card-shadow flex flex-col items-center justify-center text-center">
+                    <h3 class="font-semibold text-lg" data-lang-key="weather_current">अभी का मौसम</h3>
+                    <p class="text-sm text-gray-500" id="current-date">सितम्बर 19, 2025</p>
+                    <i id="current-weather-icon" class="fas fa-cloud-sun text-7xl text-yellow-400 my-4"></i>
+                    <p id="current-temp" class="text-5xl font-bold">26°C</p>
+                    <p id="current-condition" class="text-gray-600" data-lang-key="weather_condition">आंशिक रूप से बादल छाए रहेंगे</p>
+                    <div class="flex justify-around w-full mt-4 text-sm">
+                        <div><i class="fas fa-tint text-blue-500 mr-1"></i><span id="current-humidity">75%</span></div>
+                        <div><i class="fas fa-wind text-gray-500 mr-1"></i><span id="current-wind">5 km/h</span></div>
+                    </div>
+                </div>
+                <!-- 7-day forecast -->
+                <div class="md:col-span-2 bg-white p-6 rounded-lg card-shadow">
+                    <h3 class="font-semibold text-lg mb-4" data-lang-key="weather_forecast_title">अगले 7 दिनों का पूर्वानुमान</h3>
+                    <div id="forecast-container" class="space-y-3">
+                        <!-- JS will populate this -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Government Schemes Section -->
+        <section id="schemes" class="mb-12">
+            <h2 class="text-3xl font-bold text-center mb-2 text-green-800" data-lang-key="schemes_title">सरकारी योजनाएं</h2>
+            <p class="text-center text-gray-600 mb-6" data-lang-key="schemes_subtitle">किसानों के लिए महत्वपूर्ण सरकारी योजनाओं की जानकारी</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                 <!-- Scheme Card 1 -->
+                <div class="bg-white rounded-lg card-shadow overflow-hidden">
+                    <div class="p-6">
+                        <h3 class="font-bold text-xl mb-2" data-lang-key="scheme1_title">पीएम-किसान सम्मान निधि</h3>
+                        <p class="text-gray-700 text-base" data-lang-key="scheme1_desc">
+                            इस योजना के तहत, सभी पात्र किसान परिवारों को प्रति वर्ष ₹6,000 की आय सहायता प्रदान की जाती है।
+                        </p>
+                    </div>
+                    <div class="px-6 pt-4 pb-2">
+                        <a href="#" class="inline-block bg-green-100 rounded-full px-3 py-1 text-sm font-semibold text-green-700 mr-2 mb-2 hover:bg-green-200" data-lang-key="learn_more">और जानें</a>
+                    </div>
+                </div>
+                <!-- Scheme Card 2 -->
+                <div class="bg-white rounded-lg card-shadow overflow-hidden">
+                    <div class="p-6">
+                        <h3 class="font-bold text-xl mb-2" data-lang-key="scheme2_title">प्रधानमंत्री फसल बीमा योजना</h3>
+                        <p class="text-gray-700 text-base" data-lang-key="scheme2_desc">
+                            प्राकृतिक आपदाओं, कीटों और रोगों के कारण फसल खराब होने की स्थिति में किसानों को बीमा कवरेज और वित्तीय सहायता।
+                        </p>
+                    </div>
+                    <div class="px-6 pt-4 pb-2">
+                        <a href="#" class="inline-block bg-green-100 rounded-full px-3 py-1 text-sm font-semibold text-green-700 mr-2 mb-2 hover:bg-green-200" data-lang-key="learn_more_2">और जानें</a>
+                    </div>
+                </div>
+                <!-- Scheme Card 3 -->
+                <div class="bg-white rounded-lg card-shadow overflow-hidden">
+                    <div class="p-6">
+                        <h3 class="font-bold text-xl mb-2" data-lang-key="scheme3_title">किसान क्रेडिट कार्ड (KCC)</h3>
+                        <p class="text-gray-700 text-base" data-lang-key="scheme3_desc">
+                            किसानों को कृषि और संबद्ध गतिविधियों के लिए उनकी वित्तीय आवश्यकताओं को पूरा करने हेतु रियायती ब्याज दर पर ऋण प्रदान करना।
+                        </p>
+                    </div>
+                    <div class="px-6 pt-4 pb-2">
+                         <a href="#" class="inline-block bg-green-100 rounded-full px-3 py-1 text-sm font-semibold text-green-700 mr-2 mb-2 hover:bg-green-200" data-lang-key="learn_more_3">और जानें</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Chatbot Section -->
+        <section id="chatbot">
+            <h2 class="text-3xl font-bold text-center mb-2 text-green-800" data-lang-key="chatbot_title">कृषि चैटबॉट</h2>
+            <p class="text-center text-gray-600 mb-6" data-lang-key="chatbot_subtitle">मुझसे मौसम, मंडी भाव और योजनाओं के बारे में पूछें!</p>
+
+            <div class="bg-white p-6 rounded-lg card-shadow max-w-3xl mx-auto">
+                <div id="chatbot-window" class="chatbot-window mb-4">
+                    <!-- Chat messages will appear here -->
+                </div>
+                <form id="chatbot-form" class="flex gap-2">
+                    <input type="text" id="chatbot-input" class="flex-grow p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500" data-lang-placeholder-key="chatbot_placeholder" placeholder="अपना सवाल यहाँ लिखें...">
+                    <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </form>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-green-800 text-white mt-12 p-6 text-center">
+        <p data-lang-key="footer_text">&copy; 2025 किसान सहायक ऐप. सर्वाधिकार सुरक्षित।</p>
+    </footer>
+
+    <script>
+        // --- DATA ---
+        const translations = {
+            hi: {
+                app_title: "किसान सहायक ऐप", nav_mandi: "मंडी भाव", nav_weather: "मौसम", nav_schemes: "सरकारी योजनाएं", nav_chatbot: "चैटबॉट",
+                nav_mandi_mobile: "मंडी भाव", nav_weather_mobile: "मौसम", nav_schemes_mobile: "सरकारी योजनाएं", nav_chatbot_mobile: "चैटबॉट",
+                mandi_title: "वास्तविक समय मंडी भाव", mandi_subtitle: "अपने राज्य में फसलों के नवीनतम भाव जानें",
+                mandi_select_state: "राज्य चुनें", mandi_search_crop: "फसल खोजें", crop_search_placeholder: "जैसे, गेहूं",
+                mandi_col_crop: "फसल का नाम", mandi_col_modal: "औसत मूल्य (प्रति क्विंटल)", mandi_col_change: "बदलाव",
+                weather_title: "मौसम की जानकारी", weather_subtitle: "{state} के लिए वर्तमान और साप्ताहिक मौसम पूर्वानुमान",
+                weather_current: "अभी का मौसम",
+                weather_conditions: { "Sunny": "धूप", "Partly Cloudy": "आंशिक बादल", "Cloudy": "बादल", "Rainy": "बारिश", "Stormy": "तूफ़ानी" },
+                weather_forecast_title: "अगले 7 दिनों का पूर्वानुमान",
+                days: ['शनि', 'रवि', 'सोम', 'मंगल', 'बुध', 'गुरु', 'शुक्र'],
+                schemes_title: "सरकारी योजनाएं", schemes_subtitle: "किसानों के लिए महत्वपूर्ण सरकारी योजनाओं की जानकारी",
+                scheme1_title: "पीएम-किसान सम्मान निधि", scheme1_desc: "इस योजना के तहत, सभी पात्र किसान परिवारों को प्रति वर्ष ₹6,000 की आय सहायता प्रदान की जाती है।",
+                scheme2_title: "प्रधानमंत्री फसल बीमा योजना", scheme2_desc: "प्राकृतिक आपदाओं, कीटों और रोगों के कारण फसल खराब होने की स्थिति में किसानों को बीमा कवरेज और वित्तीय सहायता।",
+                scheme3_title: "किसान क्रेडिट कार्ड (KCC)", scheme3_desc: "किसानों को कृषि और संबद्ध गतिविधियों के लिए उनकी वित्तीय आवश्यकताओं को पूरा करने हेतु रियायती ब्याज दर पर ऋण प्रदान करना।",
+                learn_more: "और जानें", learn_more_2: "और जानें", learn_more_3: "और जानें",
+                chatbot_title: "कृषि चैटबॉट", chatbot_subtitle: "मुझसे मौसम, मंडी भाव और योजनाओं के बारे में पूछें!",
+                chatbot_placeholder: "अपना सवाल यहाँ लिखें...",
+                chatbot_welcome: "नमस्ते! मैं आपका कृषि सहायक हूँ। आप मौसम या किसी फसल का भाव पूछ सकते हैं।",
+                chatbot_fallback: "माफ़ कीजिये, मैं समझ नहीं पाया। आप पूछ सकते हैं 'आज का मौसम कैसा है?' या 'गेहूं का भाव क्या है?'।",
+                chatbot_weather_response: "{state} में आज का मौसम {condition} है, तापमान {temp}°C है।",
+                chatbot_price_response: "{state} में {crop} का औसत भाव ₹{price} प्रति क्विंटल है।",
+                chatbot_price_not_found: "{state} में {crop} का भाव उपलब्ध नहीं है।",
+                footer_text: "© 2025 किसान सहायक ऐप. सर्वाधिकार सुरक्षित।",
+                no_results: "कोई परिणाम नहीं मिला"
+            },
+            en: {
+                app_title: "Farmer Support App", nav_mandi: "Mandi Prices", nav_weather: "Weather", nav_schemes: "Govt Schemes", nav_chatbot: "Chatbot",
+                nav_mandi_mobile: "Mandi Prices", nav_weather_mobile: "Weather", nav_schemes_mobile: "Govt Schemes", nav_chatbot_mobile: "Chatbot",
+                mandi_title: "Real-time Mandi Prices", mandi_subtitle: "Get the latest crop prices in your state",
+                mandi_select_state: "Select State", mandi_search_crop: "Search Crop", crop_search_placeholder: "e.g., Wheat",
+                mandi_col_crop: "Crop Name", mandi_col_modal: "Modal Price (per Quintal)", mandi_col_change: "Change",
+                weather_title: "Weather Information", weather_subtitle: "Current and weekly weather forecast for {state}",
+                weather_current: "Current Weather",
+                weather_conditions: { "Sunny": "Sunny", "Partly Cloudy": "Partly Cloudy", "Cloudy": "Cloudy", "Rainy": "Rainy", "Stormy": "Stormy" },
+                weather_forecast_title: "Next 7-day Forecast",
+                days: ['Sat', 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
+                schemes_title: "Government Schemes", schemes_subtitle: "Information on important government schemes for farmers",
+                scheme1_title: "PM-KISAN Samman Nidhi", scheme1_desc: "Under this scheme, income support of ₹6,000 per year is provided to all eligible farmer families.",
+                scheme2_title: "Pradhan Mantri Fasal Bima Yojana", scheme2_desc: "Provides insurance coverage and financial support to farmers in the event of crop failure due to natural calamities, pests & diseases.",
+                scheme3_title: "Kisan Credit Card (KCC)", scheme3_desc: "To provide credit to farmers at a concessional rate of interest to meet their financial requirements for agriculture and allied activities.",
+                learn_more: "Learn More", learn_more_2: "Learn More", learn_more_3: "Learn More",
+                chatbot_title: "Agri Chatbot", chatbot_subtitle: "Ask me about weather, mandi prices, and schemes!",
+                chatbot_placeholder: "Type your question here...",
+                chatbot_welcome: "Hello! I am your agri-assistant. You can ask about the weather or the price of any crop.",
+                chatbot_fallback: "Sorry, I didn't understand. You can ask 'How is the weather today?' or 'What is the price of Wheat?'.",
+                chatbot_weather_response: "The weather in {state} today is {condition} with a temperature of {temp}°C.",
+                chatbot_price_response: "The average price of {crop} in {state} is ₹{price} per quintal.",
+                chatbot_price_not_found: "Price for {crop} is not available in {state}.",
+                footer_text: "© 2025 Farmer Support App. All rights reserved.",
+                no_results: "No results found"
+            },
+            pa: {
+                app_title: "ਕਿਸਾਨ ਸਹਾਇਕ ਐਪ", nav_mandi: "ਮੰਡੀ ਕੀਮਤਾਂ", nav_weather: "ਮੌਸਮ", nav_schemes: "ਸਰਕਾਰੀ ਯੋਜਨਾਵਾਂ", nav_chatbot: "ਚੈਟਬੋਟ",
+                nav_mandi_mobile: "ਮੰਡੀ ਕੀਮਤਾਂ", nav_weather_mobile: "ਮੌਸਮ", nav_schemes_mobile: "ਸਰਕਾਰੀ ਯੋਜਨਾਵਾਂ", nav_chatbot_mobile: "ਚੈਟਬੋਟ",
+                mandi_title: "ਰੀਅਲ-ਟਾਈਮ ਮੰਡੀ ਕੀਮਤਾਂ", mandi_subtitle: "ਆਪਣੇ ਰਾਜ ਵਿੱਚ ਫਸਲਾਂ ਦੀਆਂ ਨਵੀਨਤਮ ਕੀਮਤਾਂ ਜਾਣੋ",
+                mandi_select_state: "ਰਾਜ ਚੁਣੋ", mandi_search_crop: "ਫਸਲ ਲੱਭੋ", crop_search_placeholder: "ਜਿਵੇਂ, ਕਣਕ",
+                mandi_col_crop: "ਫਸਲ ਦਾ ਨਾਮ", mandi_col_modal: "ਮਾਡਲ ਕੀਮਤ (ਪ੍ਰਤੀ ਕੁਇੰਟਲ)", mandi_col_change: "ਬਦਲਾਅ",
+                weather_title: "ਮੌਸਮ ਦੀ ਜਾਣਕਾਰੀ", weather_subtitle: "{state} ਲਈ ਮੌਜੂਦਾ ਅਤੇ ਹਫਤਾਵਾਰੀ ਮੌਸਮ ਦੀ ਭਵਿੱਖਬਾਣੀ",
+                weather_current: "ਮੌਜੂਦਾ ਮੌਸਮ",
+                weather_conditions: { "Sunny": "ਧੁੱਪ", "Partly Cloudy": "ਅੰਸ਼ਕ ਬੱਦਲਵਾਈ", "Cloudy": "ਬੱਦਲਵਾਈ", "Rainy": "ਮੀਂਹ", "Stormy": "ਤੂਫਾਨੀ" },
+                weather_forecast_title: "ਅਗਲੇ 7-ਦਿਨ ਦੀ ਭਵਿੱਖਬਾਣੀ",
+                days: ['ਸ਼ਨੀ', 'ਐਤ', 'ਸੋਮ', 'ਮੰਗਲ', 'ਬੁੱਧ', 'ਵੀਰ', 'ਸ਼ੁੱਕਰ'],
+                schemes_title: "ਸਰਕਾਰੀ ਯੋਜਨਾਵਾਂ", schemes_subtitle: "ਕਿਸਾਨਾਂ ਲਈ ਮਹੱਤਵਪੂਰਨ ਸਰਕਾਰੀ ਯੋਜਨਾਵਾਂ ਬਾਰੇ ਜਾਣਕਾਰੀ",
+                scheme1_title: "ਪੀਐਮ-ਕਿਸਾਨ ਸਨਮਾਨ ਨਿਧੀ", scheme1_desc: "ਇਸ ਯੋਜਨਾ ਦੇ ਤਹਿਤ, ਸਾਰੇ ਯੋਗ ਕਿਸਾਨ ਪਰਿਵਾਰਾਂ ਨੂੰ ਪ੍ਰਤੀ ਸਾਲ ₹6,000 ਦੀ ਆਮਦਨ ਸਹਾਇਤਾ ਪ੍ਰਦਾਨ ਕੀਤੀ ਜਾਂਦੀ ਹੈ।",
+                scheme2_title: "ਪ੍ਰਧਾਨ ਮੰਤਰੀ ਫਸਲ ਬੀਮਾ ਯੋਜਨਾ", scheme2_desc: "ਕੁਦਰਤੀ ਆਫ਼ਤਾਂ, ਕੀੜਿਆਂ ਅਤੇ ਬਿਮਾਰੀਆਂ ਕਾਰਨ ਫਸਲ ਖਰਾਬ ਹੋਣ ਦੀ ਸਥਿਤੀ ਵਿੱਚ ਕਿਸਾਨਾਂ ਨੂੰ ਬੀਮਾ ਕਵਰੇਜ ਅਤੇ ਵਿੱਤੀ ਸਹਾਇਤਾ।",
+                scheme3_title: "ਕਿਸਾਨ ਕ੍ਰੈਡਿਟ ਕਾਰਡ (KCC)", scheme3_desc: "ਕਿਸਾਨਾਂ ਨੂੰ ਖੇਤੀਬਾੜੀ ਅਤੇ ਸਹਾਇਕ ਗਤੀਵਿਧੀਆਂ ਲਈ ਉਨ੍ਹਾਂ ਦੀਆਂ ਵਿੱਤੀ ਲੋੜਾਂ ਨੂੰ ਪੂਰਾ ਕਰਨ ਲਈ ਰਿਆਇਤੀ ਵਿਆਜ ਦਰ 'ਤੇ ਕਰਜ਼ਾ ਪ੍ਰਦਾਨ ਕਰਨਾ।",
+                learn_more: "ਹੋਰ ਜਾਣੋ", learn_more_2: "ਹੋਰ ਜਾਣੋ", learn_more_3: "ਹੋਰ ਜਾਣੋ",
+                chatbot_title: "ਖੇਤੀ ਚੈਟਬੋਟ", chatbot_subtitle: "ਮੇਰੇ ਤੋਂ ਮੌਸਮ, ਮੰਡੀ ਕੀਮਤਾਂ ਅਤੇ ਯੋਜਨਾਵਾਂ ਬਾਰੇ ਪੁੱਛੋ!",
+                chatbot_placeholder: "ਆਪਣਾ ਸਵਾਲ ਇੱਥੇ ਲਿਖੋ...",
+                chatbot_welcome: "ਸਤਿ ਸ਼੍ਰੀ ਅਕਾਲ! ਮੈਂ ਤੁਹਾਡਾ ਖੇਤੀ ਸਹਾਇਕ ਹਾਂ। ਤੁਸੀਂ ਮੌਸਮ ਜਾਂ ਕਿਸੇ ਫਸਲ ਦੀ ਕੀਮਤ ਬਾਰੇ ਪੁੱਛ ਸਕਦੇ ਹੋ।",
+                chatbot_fallback: "ਮਾਫ਼ ਕਰਨਾ, ਮੈਂ ਸਮਝ ਨਹੀਂ ਸਕਿਆ। ਤੁਸੀਂ ਪੁੱਛ ਸਕਦੇ ਹੋ 'ਅੱਜ ਮੌਸਮ ਕਿਵੇਂ ਹੈ?' ਜਾਂ 'ਕਣਕ ਦਾ ਕੀ ਭਾਅ ਹੈ?'।",
+                chatbot_weather_response: "{state} ਵਿੱਚ ਅੱਜ ਮੌਸਮ {condition} ਹੈ, ਤਾਪਮਾਨ {temp}°C ਹੈ।",
+                chatbot_price_response: "{state} ਵਿੱਚ {crop} ਦੀ ਔਸਤ ਕੀਮਤ ₹{price} ਪ੍ਰਤੀ ਕੁਇੰਟਲ ਹੈ।",
+                chatbot_price_not_found: "{state} ਵਿੱਚ {crop} ਦੀ ਕੀਮਤ ਉਪਲਬਧ ਨਹੀਂ ਹੈ।",
+                footer_text: "© 2025 ਕਿਸਾਨ ਸਹਾਇਕ ਐਪ। ਸਾਰੇ ਹੱਕ ਰਾਖਵੇਂ ਹਨ।",
+                no_results: "ਕੋਈ ਨਤੀਜਾ ਨਹੀਂ ਮਿਲਿਆ"
+            },
+            mr: {
+                app_title: "शेतकरी समर्थन ॲप", nav_mandi: "बाजार भाव", nav_weather: "हवामान", nav_schemes: "सरकारी योजना", nav_chatbot: "चॅटबॉट",
+                nav_mandi_mobile: "बाजार भाव", nav_weather_mobile: "हवामान", nav_schemes_mobile: "सरकारी योजना", nav_chatbot_mobile: "चॅटबॉट",
+                mandi_title: "वास्तविक वेळेतील बाजार भाव", mandi_subtitle: "तुमच्या राज्यातील पिकांचे नवीनतम भाव जाणून घ्या",
+                mandi_select_state: "राज्य निवडा", mandi_search_crop: "पीक शोधा", crop_search_placeholder: "उदा. गहू",
+                mandi_col_crop: "पिकाचे नाव", mandi_col_modal: "सर्वसाधारण किंमत (प्रति क्विंटल)", mandi_col_change: "बदल",
+                weather_title: "हवामान माहिती", weather_subtitle: "{state}साठी वर्तमान आणि साप्ताहिक हवामान अंदाज",
+                weather_current: "सध्याचे हवामान",
+                weather_conditions: { "Sunny": "ऊन", "Partly Cloudy": "अंशतः ढगाळ", "Cloudy": "ढगाळ", "Rainy": "पाऊस", "Stormy": "वादळी" },
+                weather_forecast_title: "पुढील ७-दिवसांचा अंदाज",
+                days: ['शनि', 'रवि', 'सोम', 'मंगळ', 'बुध', 'गुरु', 'शुक्र'],
+                schemes_title: "सरकारी योजना", schemes_subtitle: "शेतकऱ्यांसाठी महत्त्वाच्या सरकारी योजनांची माहिती",
+                scheme1_title: "पीएम-किसान सन्मान निधी", scheme1_desc: "या योजनेंतर्गत, सर्व पात्र शेतकरी कुटुंबांना प्रतिवर्षी ₹6,000 ची उत्पन्न मदत दिली जाते.",
+                scheme2_title: "प्रधानमंत्री फसल विमा योजना", scheme2_desc: "नैसर्गिक आपत्ती, कीड आणि रोगांमुळे पीक खराब झाल्यास शेतकऱ्यांना विमा संरक्षण आणि आर्थिक सहाय्य.",
+                scheme3_title: "किसान क्रेडिट कार्ड (KCC)", scheme3_desc: "शेतकऱ्यांना कृषी आणि संलग्न कामांसाठी त्यांच्या आर्थिक गरजा पूर्ण करण्यासाठी सवलतीच्या व्याज दराने कर्ज उपलब्ध करून देणे.",
+                learn_more: "अधिक जाणून घ्या", learn_more_2: "अधिक जाणून घ्या", learn_more_3: "अधिक जाणून घ्या",
+                chatbot_title: "कृषी चॅटबॉट", chatbot_subtitle: "मला हवामान, बाजार भाव आणि योजनांबद्दल विचारा!",
+                chatbot_placeholder: "तुमचा प्रश्न येथे टाइप करा...",
+                chatbot_welcome: "नमस्कार! मी तुमचा कृषी सहाय्यक आहे. तुम्ही हवामान किंवा कोणत्याही पिकाच्या भावाबद्दल विचारू शकता.",
+                chatbot_fallback: "माफ करा, मला समजले नाही. तुम्ही विचारू शकता 'आज हवामान कसे आहे?' किंवा 'गव्हाचा भाव काय आहे?'",
+                chatbot_weather_response: "{state} मध्ये आज हवामान {condition} आहे, तापमान {temp}°C आहे.",
+                chatbot_price_response: "{state} मध्ये {crop} चा सरासरी भाव ₹{price} प्रति क्विंटल आहे.",
+                chatbot_price_not_found: "{state} मध्ये {crop} चा भाव उपलब्ध नाही.",
+                footer_text: "© 2025 शेतकरी समर्थन ॲप. सर्व हक्क राखीव.",
+                no_results: "कोणतेही परिणाम आढळले नाहीत"
+            }
+        };
+
+        const indianStates = [ "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka", "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal", "Andaman and Nicobar Islands", "Chandigarh", "Dadra and Nagar Haveli and Daman and Diu", "Delhi", "Jammu and Kashmir", "Ladakh", "Lakshadweep", "Puducherry" ];
+
+        const cropData = {
+            wheat: { hi: 'गेहूं', en: 'Wheat', pa: 'ਕਣਕ', mr: 'गहू' },
+            paddy: { hi: 'धान', en: 'Paddy', pa: 'ਝੋਨਾ', mr: 'भात' },
+            mustard: { hi: 'सरसों', en: 'Mustard', pa: 'ਸਰ੍ਹੋਂ', mr: 'मोहरी' },
+            potato: { hi: 'आलू', en: 'Potato', pa: 'ਆਲੂ', mr: 'बटाटा' },
+            onion: { hi: 'प्याज', en: 'Onion', pa: 'ਪਿਆਜ', mr: 'कांदा' },
+            tomato: { hi: 'टमाटर', en: 'Tomato', pa: 'ਟਮਾਟਰ', mr: 'टोमॅटो' },
+            sugarcane: { hi: 'गन्ना', en: 'Sugarcane', pa: 'ਗੰਨਾ', mr: 'ऊस' },
+            cotton: { hi: 'कपास', en: 'Cotton', pa: 'ਕਪਾਹ', mr: 'कापूस' }
+        };
+
+        // Generates dynamic data for each state
+        const mandiDataByState = indianStates.reduce((acc, state) => {
+            acc[state] = Object.keys(cropData).map(key => {
+                const basePrice = 2000 + Math.random() * 3000;
+                const change = (Math.random() - 0.5) * 100;
+                return {
+                    id: key,
+                    crop: cropData[key],
+                    modal: Math.round(basePrice),
+                    change: Math.round(change)
+                };
+            });
+            return acc;
+        }, {});
+
+        const weatherDataByState = indianStates.reduce((acc, state) => {
+            const conditions = ["Sunny", "Partly Cloudy", "Cloudy", "Rainy", "Stormy"];
+            const randomCondition = conditions[Math.floor(Math.random() * conditions.length)];
+            const temp = 15 + Math.round(Math.random() * 20);
+            acc[state] = {
+                current: {
+                    temp: temp,
+                    condition: randomCondition,
+                    humidity: 60 + Math.round(Math.random() * 30),
+                    wind: 5 + Math.round(Math.random() * 15)
+                },
+                forecast: Array(7).fill(0).map(() => ({
+                    icon: conditions[Math.floor(Math.random() * conditions.length)],
+                    high: temp + Math.round(Math.random() * 5),
+                    low: temp - Math.round(Math.random() * 5)
+                }))
+            };
+            return acc;
+        }, {});
+
+
+        // --- SCRIPT LOGIC ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const languageSelector = document.getElementById('language-selector');
+            const stateSelect = document.getElementById('state-select');
+            const cropSearchInput = document.getElementById('crop-search');
+            const chatbotForm = document.getElementById('chatbot-form');
+            const chatbotInput = document.getElementById('chatbot-input');
+            const chatbotWindow = document.getElementById('chatbot-window');
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+
+            let currentLang = 'hi';
+            let currentState = 'Uttarakhand';
+
+            // --- INITIALIZATION ---
+            function init() {
+                // Populate states
+                indianStates.forEach(state => {
+                    const option = document.createElement('option');
+                    option.value = state;
+                    option.textContent = state;
+                    stateSelect.appendChild(option);
+                });
+                stateSelect.value = currentState;
+
+                // Set language
+                const savedLang = localStorage.getItem('farmer-app-language') || 'hi';
+                languageSelector.value = savedLang;
+                setLanguage(savedLang);
+
+                // Add chatbot welcome message
+                setTimeout(() => {
+                    addChatMessage(translations[currentLang].chatbot_welcome, 'bot');
+                }, 500);
+            }
+
+            // --- LANGUAGE AND RENDERING ---
+            function setLanguage(lang) {
+                currentLang = lang;
+                document.documentElement.lang = lang;
+                document.querySelectorAll('[data-lang-key]').forEach(element => {
+                    const key = element.getAttribute('data-lang-key');
+                    if (translations[lang] && translations[lang][key]) {
+                        let text = translations[lang][key];
+                        if(key === 'weather_subtitle') text = text.replace('{state}', currentState);
+                        element.textContent = text;
+                    }
+                });
+                document.querySelectorAll('[data-lang-placeholder-key]').forEach(element => {
+                    const key = element.getAttribute('data-lang-placeholder-key');
+                    if (translations[lang] && translations[lang][key]) {
+                        element.placeholder = translations[lang][key];
+                    }
+                });
+
+                // Rerender dynamic content
+                renderMandiTable(currentState, currentLang);
+                renderWeather(currentState, currentLang);
+                document.getElementById('current-date').textContent = new Intl.DateTimeFormat(lang === 'en' ? 'en-GB' : 'hi-IN', { dateStyle: 'full' }).format(new Date());
+            }
+
+            function renderMandiTable(state, lang, filter = '') {
+                const mandiTableBody = document.getElementById('mandi-table-body');
+                const data = mandiDataByState[state] || [];
+                const filteredData = data.filter(item => item.crop[lang].toLowerCase().includes(filter.toLowerCase()));
+
+                mandiTableBody.innerHTML = '';
+                if (filteredData.length === 0) {
+                    mandiTableBody.innerHTML = `<tr><td colspan="3" class="text-center py-4">${translations[lang].no_results}</td></tr>`;
+                    return;
+                }
+                filteredData.forEach(item => {
+                    const changeColor = item.change > 0 ? 'text-green-600' : 'text-red-600';
+                    const changeIcon = item.change > 0 ? 'fa-arrow-up' : 'fa-arrow-down';
+                    const row = `
+                        <tr class="border-b hover:bg-gray-50">
+                            <td class="py-3 px-4">${item.crop[lang]}</td>
+                            <td class="py-3 px-4 font-semibold">₹${item.modal}</td>
+                            <td class="py-3 px-4 ${changeColor}">
+                                <i class="fas ${changeIcon} mr-1"></i>
+                                ₹${Math.abs(item.change)}
+                            </td>
+                        </tr>
+                    `;
+                    mandiTableBody.innerHTML += row;
+                });
+            }
+
+            function renderWeather(state, lang) {
+                const data = weatherDataByState[state];
+                if (!data) return;
+                
+                // Update subtitle
+                const subtitle = document.getElementById('weather-location-subtitle');
+                subtitle.textContent = translations[lang].weather_subtitle.replace('{state}', state);
+
+                // Update current weather
+                const conditionsMap = { "Sunny": "fa-sun text-yellow-500", "Partly Cloudy": "fa-cloud-sun text-yellow-400", "Cloudy": "fa-cloud text-gray-500", "Rainy": "fa-cloud-showers-heavy text-blue-500", "Stormy": "fa-poo-storm text-gray-700" };
+                document.getElementById('current-weather-icon').className = `fas ${conditionsMap[data.current.condition]} text-7xl my-4`;
+                document.getElementById('current-temp').textContent = `${data.current.temp}°C`;
+                document.getElementById('current-condition').textContent = translations[lang].weather_conditions[data.current.condition];
+                document.getElementById('current-humidity').textContent = `${data.current.humidity}%`;
+                document.getElementById('current-wind').textContent = `${data.current.wind} km/h`;
+
+                // Update forecast
+                const forecastContainer = document.getElementById('forecast-container');
+                const dayNames = translations[lang].days;
+                forecastContainer.innerHTML = '';
+                data.forecast.forEach((day, index) => {
+                    const forecastEl = `
+                        <div class="flex items-center justify-between p-2 rounded-md hover:bg-gray-100">
+                            <p class="w-1/4 font-medium">${dayNames[(new Date().getDay() + index + 1) % 7]}</p>
+                            <i class="fas ${conditionsMap[day.icon]} text-2xl w-1/2 text-center"></i>
+                            <p class="w-1/4 text-right text-gray-600">${day.high}° / ${day.low}°</p>
+                        </div>
+                    `;
+                    forecastContainer.innerHTML += forecastEl;
+                });
+            }
+
+            // --- CHATBOT LOGIC ---
+            function addChatMessage(message, sender) {
+                const bubble = document.createElement('div');
+                bubble.className = `chat-bubble ${sender}`;
+                bubble.textContent = message;
+                chatbotWindow.appendChild(bubble);
+                chatbotWindow.scrollTop = chatbotWindow.scrollHeight;
+            }
+
+            function getBotResponse(query) {
+                const q = query.toLowerCase();
+                
+                // Check for weather keywords
+                if (q.includes(translations[currentLang].weather_title.toLowerCase()) || q.includes('weather') || q.includes('mausam') || q.includes('मौसम')) {
+                    const weather = weatherDataByState[currentState];
+                    return translations[currentLang].chatbot_weather_response
+                        .replace('{state}', currentState)
+                        .replace('{condition}', translations[currentLang].weather_conditions[weather.current.condition])
+                        .replace('{temp}', weather.current.temp);
+                }
+                
+                // Check for crop price keywords
+                for (const key in cropData) {
+                    const cropNames = cropData[key];
+                    if (q.includes(cropNames[currentLang].toLowerCase()) || q.includes(cropNames['en'].toLowerCase())) {
+                        const priceData = mandiDataByState[currentState].find(item => item.id === key);
+                        if(priceData) {
+                            return translations[currentLang].chatbot_price_response
+                                .replace('{state}', currentState)
+                                .replace('{crop}', cropNames[currentLang])
+                                .replace('{price}', priceData.modal);
+                        } else {
+                             return translations[currentLang].chatbot_price_not_found
+                                .replace('{state}', currentState)
+                                .replace('{crop}', cropNames[currentLang]);
+                        }
+                    }
+                }
+
+                return translations[currentLang].chatbot_fallback;
+            }
+
+            // --- EVENT LISTENERS ---
+            languageSelector.addEventListener('change', (e) => {
+                const selectedLang = e.target.value;
+                localStorage.setItem('farmer-app-language', selectedLang);
+                setLanguage(selectedLang);
+            });
+
+            stateSelect.addEventListener('change', (e) => {
+                currentState = e.target.value;
+                renderMandiTable(currentState, currentLang, cropSearchInput.value);
+                renderWeather(currentState, currentLang);
+                // Update subtitle without full language change
+                 document.getElementById('weather-location-subtitle').textContent = translations[currentLang].weather_subtitle.replace('{state}', currentState);
+            });
+
+            cropSearchInput.addEventListener('input', (e) => {
+                renderMandiTable(currentState, currentLang, e.target.value);
+            });
+
+            chatbotForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const userInput = chatbotInput.value.trim();
+                if (!userInput) return;
+
+                addChatMessage(userInput, 'user');
+                chatbotInput.value = '';
+
+                setTimeout(() => {
+                    const botResponse = getBotResponse(userInput);
+                    addChatMessage(botResponse, 'bot');
+                }, 1000 + Math.random() * 500);
+            });
+            
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+
+            // --- START THE APP ---
+            init();
+        });
+    </script>
+</body>
+</html>
+
